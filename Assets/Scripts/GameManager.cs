@@ -71,6 +71,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        uiHandler.UpdateScore();
         isGameActive = true;
         dis = 0;
         isOpponentPlayed = false;
@@ -94,8 +95,8 @@ public class GameManager : MonoBehaviour
             Instantiate(card, transform.position, card.transform.rotation, opponent.transform);
             spawnedCards.RemoveAt(x);
         }
-        
-        
+
+
         playerCards = player.transform.GetComponentsInChildren<Card>();
         opponentCards = opponent.transform.GetComponentsInChildren<Card>();
 
@@ -113,8 +114,8 @@ public class GameManager : MonoBehaviour
             opponentCards[i].isPlayerCard = false;
         }
 
-        
-        
+
+
     }
 
 
@@ -186,7 +187,6 @@ public class GameManager : MonoBehaviour
             else
             {
                 opponentScore++;
-
             }
             print("RoundIsOver");
             StartCoroutine(FinishRound());
@@ -206,11 +206,13 @@ public class GameManager : MonoBehaviour
     IEnumerator FinishRound()
     {
         yield return new WaitForSeconds(1);
+        uiHandler.UpdateScore();
         Card[] _playedCards = playedCards.transform.GetComponentsInChildren<Card>();
         foreach (var card in _playedCards)
         {
             card.Move(new Vector3(7, 0, 0));
         }
+
         currentState = GameState.RoundOver;
         if (playerCards.Length > 0)
         {
@@ -219,7 +221,16 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            EndGame();
+            bool isplayerwon = default;
+            if (playerScore > opponentScore)
+            {
+                isplayerwon = true;
+            }
+            else
+            {
+                isplayerwon = false;
+            }
+            StartCoroutine(uiHandler.OpenFinishMenu(isplayerwon));
             print("The Game Is Finished");
         }
     }
@@ -242,12 +253,11 @@ public class GameManager : MonoBehaviour
                 Destroy(card.gameObject);
             }
         }
+
         foreach (Transform card in playedCards.transform)
         {
             Destroy(card.gameObject);
         }
-
-        uiHandler.BackToMenu();
     }
 }
 

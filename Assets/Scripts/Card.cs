@@ -12,8 +12,8 @@ public class Card : MonoBehaviour
     public int power;
     public bool isPlayerCard = true;
 
-    [SerializeField] private Sprite top;
-    [SerializeField] private Sprite button;
+    [SerializeField] private Sprite topSprite;
+    [SerializeField] private Sprite buttonSprite;
     [SerializeField] private float moveSpeed;
     private GameManager gameManager;
     private Image img;
@@ -28,6 +28,7 @@ public class Card : MonoBehaviour
         scale = new Vector3(1, 1, 1);
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         img = GetComponent<Image>();
+        img.sprite = buttonSprite;
     }
 
     private void Update()
@@ -106,16 +107,16 @@ public class Card : MonoBehaviour
         scale = GetComponent<BoxCollider>().size;
         scale.x *= -1;
         GetComponent<BoxCollider>().size = scale;
-        if (img != null && button != null && top != null)
+        if (img != null && buttonSprite != null && topSprite != null)
         {
             if (isTop)
             {
-                img.sprite = button;
+                img.sprite = buttonSprite;
                 isTop = false;
             }
             else
             {
-                img.sprite = top;
+                img.sprite = topSprite;
                 isTop = true;
             }
             print("flipped");
