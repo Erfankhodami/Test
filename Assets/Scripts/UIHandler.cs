@@ -9,9 +9,14 @@ public class UIHandler : MonoBehaviour
 {
     [SerializeField] private Animator mainMenuAnimator;
     [SerializeField] private Animator inGameMenuAnimator;
-    [SerializeField] private GameObject InGameUI;
+    [SerializeField] private GameObject inGameUI;
     [SerializeField] private GameObject finishMenu;
-    [SerializeField] private GameObject ScoreText;
+    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private Animator frameSelectMenuAnimator;
+    [SerializeField] private List<Sprite> frames;
+    [SerializeField] private GameObject frameIndicator;
+
+    public Sprite selectedFrame;
 
     private GameManager gameManager;
     private bool inGameMenuOpen;
@@ -21,13 +26,16 @@ public class UIHandler : MonoBehaviour
 
     private void Start()
     {
+        Application.targetFrameRate = 60;
+        SelectFrame(0);
         InGameMenuPosX = inGameMenuAnimator.transform.localPosition.x;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     public void StartGame()
     {
-        InGameUI.SetActive(true);
+        scoreText.gameObject.SetActive(true);
+        inGameUI.SetActive(true);
         ResetInGameMenuPos();
         inGameMenuOpen = false;
         mainMenuAnimator.SetTrigger("MoveDown");
@@ -36,15 +44,14 @@ public class UIHandler : MonoBehaviour
 
     public void UpdateScore()
     {
-        ScoreText.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
-            gameManager.opponentScore +""+ gameManager.playerScore;
+        scoreText.text = gameManager.opponentScore +""+ gameManager.playerScore;
     }
 
 
     public IEnumerator OpenFinishMenu(bool isPlayerWon)
     {
         yield return new WaitForSeconds(0.1f);
-        InGameUI.SetActive(false);
+        inGameUI.SetActive(false);
         GameObject resultText = finishMenu.transform.Find("Result").gameObject;
         GameObject backToMenuButton = finishMenu.transform.Find("BackToMainMenu").gameObject;
 
@@ -69,8 +76,9 @@ public class UIHandler : MonoBehaviour
 
     public void BackToMenu()
     {
+        scoreText.gameObject.SetActive(false);
         finishMenu.SetActive(false);
-        InGameUI.SetActive(false);
+        inGameUI.SetActive(false);
         mainMenuAnimator.SetTrigger("MoveUp");
         gameManager.EndGame();
     }
@@ -95,5 +103,24 @@ public class UIHandler : MonoBehaviour
         var pos = inGameMenuAnimator.transform.localPosition;
         pos.x = InGameMenuPosX;
         inGameMenuAnimator.transform.localPosition = pos;
+    }
+
+    public void OpenFrameSelectMenu()
+    {
+        mainMenuAnimator.transform.localPosition=Vector3.zero;
+        mainMenuAnimator.SetTrigger("MoveDown");
+        frameSelectMenuAnimator.SetTrigger("MoveUp");
+    }
+
+    public void CloseFrameSelectMenu()
+    {
+        mainMenuAnimator.SetTrigger("MoveUp");
+        frameSelectMenuAnimator.SetTrigger("MoveDown");
+    }
+
+    public void SelectFrame(int index)
+    {
+        selectedFrame = frames[index];
+        frameIndicator.transform.localPosition = new Vector3((index - 1) * 265, frameIndicator.transform.localPosition.y,0);
     }
 }

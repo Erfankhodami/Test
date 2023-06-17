@@ -5,6 +5,7 @@ using Unity.VisualScripting.Antlr3.Runtime;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
@@ -36,6 +37,7 @@ public class GameManager : MonoBehaviour
     private GameObject opponent;
     private GameObject playedCards;
     private GameObject player;
+    private SFXController SFXController;
     private List<GameObject> spawnedCards;
 
     private UIHandler uiHandler;
@@ -43,6 +45,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         uiHandler = GameObject.Find("UIHandler").GetComponent<UIHandler>();
+        SFXController = GameObject.Find("SFX").GetComponent<SFXController>();
         playedCards = GameObject.Find("PlayedCards");
         opponent = GameObject.Find("Opponent");
         player = GameObject.Find("Player");
@@ -71,7 +74,6 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        uiHandler.UpdateScore();
         isGameActive = true;
         dis = 0;
         isOpponentPlayed = false;
@@ -106,16 +108,16 @@ public class GameManager : MonoBehaviour
             playerCards[i].Move(new Vector3((i - (((float)playerCards.Length - 1) / 2)) * 85, 0, i * -10));
             playerCards[i].Flip();
             playerCards[i].isPlayerCard = true;
+            playerCards[i].transform.Find("Frame").GetComponent<Image>().sprite = uiHandler.selectedFrame;
         }
 
         for (int i = 0; i < opponentCards.Length; i++)
         {
             opponentCards[i].Move(new Vector3((i - (((float)playerCards.Length - 1) / 2)) * 85, 0, i * -10));
             opponentCards[i].isPlayerCard = false;
+            opponentCards[i].transform.Find("Frame").GetComponent<Image>().sprite = uiHandler.selectedFrame;
         }
-
-
-
+        uiHandler.UpdateScore();
     }
 
 
@@ -205,7 +207,8 @@ public class GameManager : MonoBehaviour
 
     IEnumerator FinishRound()
     {
-        yield return new WaitForSeconds(1);
+        SFXController.PlayClip(SFXController.cardThrowClip);
+        yield return new WaitForSeconds(3);
         uiHandler.UpdateScore();
         Card[] _playedCards = playedCards.transform.GetComponentsInChildren<Card>();
         foreach (var card in _playedCards)
