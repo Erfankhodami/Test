@@ -10,8 +10,10 @@ using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 
+//این اسکریپت کنترل کننده خود بازی است
 public class GameManager : MonoBehaviour
 {
+    //ساخت یک enum برای مشخص کردن حالتی که بازی در آن قرار دارد
     public enum GameState
     {
         PlayerTurn,
@@ -19,31 +21,51 @@ public class GameManager : MonoBehaviour
         RoundOver
     }
 
+    //ساخت یک متغیر از نوع همان انوم که در بالا ساختیم
     public GameState currentState;
+
+    //ساخت یک آرایه از نوع گیم ابجکت که کارت های قابل بازی کردن را ذخیره میکند
     [SerializeField] private List<GameObject> cards;
+
+    //ساخت دو آرایه یکی برای کارت های بازیکن و دیگری برای کارت های حریف
     public Card[] playerCards;
+
     public Card[] opponentCards;
 
+    //ساخت دو متغیر از نوع کلاس card برای ذخیره کردن کارت بازی شده توسط بازیکن و حریف
     public Card playerThrownCard;
+
     public Card opponentThrownCard;
 
+    //سه متغیر بول برای مشخص کردن اینکه حریف نوبتش را بازی کرده یا خیر و اینکه بازی فعال است یا خیر
     public bool isPlayerPlayed;
     public bool isOpponentPlayed;
 
+    public bool isGameActive;
+
+    //دو متغیر اینت برای ذخیره امتیاز پلیر و بازیکن
     public int playerScore;
+
     public int opponentScore;
 
-    public bool isGameActive;
+    //ساخت یک متغیر برای زیاد کردن فاصله کارت ها به ازای هر بار که یک دست بازی شد
     private float dis;
+
+    //ساخت سه متغیر گیم ابجکت برای زیرمجموعه کردن کارت ها به آنها
     private GameObject opponent;
     private GameObject playedCards;
+
     private GameObject player;
+
+    //ساخت یک متغیر برای مدیریت ایجاد کارت ها به صورت رندوم
     private List<GameObject> spawnedCards;
 
+    //ساخت یک متغیر از نوع ui handler برای دسترسی راحت تر به اسکریپت UIHandler
     private UIHandler uiHandler;
 
     private void Start()
     {
+        //مقدار دهی متغیر های ایجاد شده توسط خود یونیتی
         uiHandler = GameObject.Find("UIHandler").GetComponent<UIHandler>();
         playedCards = GameObject.Find("PlayedCards");
         opponent = GameObject.Find("Opponent");
@@ -52,6 +74,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        //این کد همواره اجرا میشود و نوبت بازیکن و حریف را مدیریت میکند
         if (isGameActive)
         {
             switch (currentState)
@@ -71,6 +94,7 @@ public class GameManager : MonoBehaviour
 
     }
 
+    //این متد برای شروع بازی است
     public void StartGame()
     {
         isGameActive = true;
