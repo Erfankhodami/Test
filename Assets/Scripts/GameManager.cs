@@ -23,8 +23,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private List<GameObject> cards;
     public Card[] playerCards;
     public Card[] opponentCards;
-    public int playerCardPower;
-    public int opponentCardPower;
+
+    public Card playerThrownCard;
+    public Card opponentThrownCard;
 
     public bool isPlayerPlayed;
     public bool isOpponentPlayed;
@@ -37,7 +38,6 @@ public class GameManager : MonoBehaviour
     private GameObject opponent;
     private GameObject playedCards;
     private GameObject player;
-    private SFXController SFXController;
     private List<GameObject> spawnedCards;
 
     private UIHandler uiHandler;
@@ -45,7 +45,6 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         uiHandler = GameObject.Find("UIHandler").GetComponent<UIHandler>();
-        SFXController = GameObject.Find("SFX").GetComponent<SFXController>();
         playedCards = GameObject.Find("PlayedCards");
         opponent = GameObject.Find("Opponent");
         player = GameObject.Find("Player");
@@ -145,7 +144,7 @@ public class GameManager : MonoBehaviour
         {
             isOpponentPlayed = true;
             int index = Random.Range(0, opponentCards.Length);
-            opponentCardPower = opponentCards[index].power;
+            opponentThrownCard = opponentCards[index];
             yield return new WaitForSeconds(1);
             opponentCards[index].Flip();
             yield return new WaitForSeconds(0.1f);
@@ -167,7 +166,7 @@ public class GameManager : MonoBehaviour
     {
         isOpponentPlayed = false;
         isPlayerPlayed = false;
-        if (playerCardPower > opponentCardPower)
+        if (playerThrownCard.power > opponentThrownCard.power)
         {
             currentState = GameState.PlayerTurn;
         }
@@ -181,14 +180,15 @@ public class GameManager : MonoBehaviour
     {
         if (isPlayerPlayed && isOpponentPlayed)
         {
-            if (playerCardPower > opponentCardPower)
+            if (playerThrownCard.power > opponentThrownCard.power)
             {
                 playerScore++;
-
+                playerThrownCard.Impact();
             }
             else
             {
                 opponentScore++;
+                opponentThrownCard.Impact();
             }
             print("RoundIsOver");
             StartCoroutine(FinishRound());
@@ -207,7 +207,6 @@ public class GameManager : MonoBehaviour
 
     IEnumerator FinishRound()
     {
-        SFXController.PlayClip(SFXController.cardThrowClip);
         yield return new WaitForSeconds(3);
         uiHandler.UpdateScore();
         Card[] _playedCards = playedCards.transform.GetComponentsInChildren<Card>();

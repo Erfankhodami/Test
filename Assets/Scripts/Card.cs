@@ -58,7 +58,7 @@ public class Card : MonoBehaviour
                         else
                         {
 
-                            gameManager.playerCardPower = power;
+                            gameManager.playerThrownCard = this;
                             ThrowCard();
                         }
                     }
@@ -71,6 +71,11 @@ public class Card : MonoBehaviour
 
             }
         }
+    }
+
+    public void Impact()
+    {
+        GetComponent<AudioSource>().Play();
     }
 
 
